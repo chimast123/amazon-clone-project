@@ -69,7 +69,11 @@ function updateCartQuantity() {
     cartQuantity += cartItem.quantity;
   });
 
+  // Update cart icon (existing functionality)
   document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+
+  // Return the value for checkout.js to use
+  return cartQuantity;
 }
 
 document.querySelectorAll(".js-add-to-cart").forEach((button) => {

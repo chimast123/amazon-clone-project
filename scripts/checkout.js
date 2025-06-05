@@ -1,6 +1,7 @@
 import { cart, removeFromCart } from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
+import { updateCartQuantity } from "../amazon.js";
 
 let cartSummaryHTML = "";
 
@@ -91,6 +92,17 @@ cart.forEach((cartItem) => {
           </div>`;
 });
 
+// Function to update the checkout header
+function updateCheckoutHeader() {
+  const quantity = updateCartQuantity(); // Reuse the shared function
+  document.querySelector(".js-cart-quantity").textContent = `${quantity} items`;
+}
+
+// Initialize on page load
+document.addEventListener("DOMContentLoaded", () => {
+  updateCheckoutHeader();
+});
+
 document.querySelector(".js-order-summary").innerHTML = cartSummaryHTML;
 
 document.querySelectorAll(".js-delete-link").forEach((link) => {
@@ -102,5 +114,7 @@ document.querySelectorAll(".js-delete-link").forEach((link) => {
       `.js-cart-item-container-${productId}`
     );
     container.remove();
+
+    updateCheckoutHeader();
   });
 });
