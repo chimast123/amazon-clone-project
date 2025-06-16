@@ -1,13 +1,11 @@
-import { cart, removeFromCart } from "../data/cart.js";
+import { calculateCartQuantity, cart, removeFromCart } from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
 
 function updateCartQuantity() {
-  let cartQuantity = 0;
+  calculateCartQuantity();
 
-  cart.forEach((cartItem) => {
-    cartQuantity += cartItem.quantity;
-  });
+  const cartQuantity = calculateCartQuantity();
 
   document.querySelector(".js-item-count").innerHTML = `${cartQuantity} items`;
 
