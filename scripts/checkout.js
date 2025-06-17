@@ -46,7 +46,7 @@ cart.forEach((cartItem) => {
                   matchingProduct.priceCents
                 )}</div>
                 <div class="product-quantity">
-                  <span> Quantity: <span class="quantity-label">${
+                  <span class="js-quantity-count"> Quantity: <span class="quantity-label">${
                     cartItem.quantity
                   }</span> </span>
                   <span class="update-quantity-link link-primary js-update-link" data-product-id = "${
@@ -130,6 +130,8 @@ document.querySelectorAll(".js-update-link").forEach((link) => {
     const container = document.querySelector(
       `.js-cart-item-container-${productId}`
     );
+
+    document.querySelector(".js-quantity-count").innerHTML = "Quantity: ";
 
     container.classList.add("is-editing-quantity");
   });
