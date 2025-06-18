@@ -1,4 +1,9 @@
-import { calculateCartQuantity, cart, removeFromCart } from "../data/cart.js";
+import {
+  calculateCartQuantity,
+  cart,
+  removeFromCart,
+  updateQuantity,
+} from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
 
@@ -152,15 +157,12 @@ document.querySelectorAll(".js-save-link").forEach((link) => {
     );
 
     const input = document.querySelector(".js-quantity-input").value;
-    const newQuantity = Number(input);
+    let newQuantity = Number(input);
 
     container.classList.remove("is-editing-quantity");
 
     // Update the quantity in cart data here too
-    const cartItem = cart.find((item) => item.productId === productId);
-    if (cartItem) {
-      cartItem.quantity = newQuantity;
-    }
+    updateQuantity(productId, newQuantity);
 
     const quantityCount = container.querySelector(".js-quantity-count");
     quantityCount.innerHTML = `Quantity: <span class="quantity-label js-quantity-label">${newQuantity}</span>`;
