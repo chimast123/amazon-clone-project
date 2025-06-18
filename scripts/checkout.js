@@ -46,7 +46,7 @@ cart.forEach((cartItem) => {
                   matchingProduct.priceCents
                 )}</div>
                 <div class="product-quantity">
-                  <span class="js-quantity-count"> Quantity: <span class="quantity-label">${
+                  <span class="js-quantity-count"> Quantity: <span class="quantity-label js-quantity-label">${
                     cartItem.quantity
                   }</span> </span>
                   <span class="update-quantity-link link-primary js-update-link" data-product-id = "${
@@ -54,7 +54,7 @@ cart.forEach((cartItem) => {
                   }">
                     Update
                   </span>
-                  <input class="quantity-input">
+                  <input class="quantity-input js-quantity-input">
                   <span class="save-quantity-link link-primary js-save-link" data-product-id = "${
                     matchingProduct.id
                   }">
@@ -135,7 +135,9 @@ document.querySelectorAll(".js-update-link").forEach((link) => {
       `.js-cart-item-container-${productId}`
     );
 
-    document.querySelector(".js-quantity-count").innerHTML = "Quantity: ";
+    // FIX: Only update quantity count inside this container
+    const quantityCount = container.querySelector(".js-quantity-count");
+    quantityCount.innerHTML = "Quantity: ";
 
     container.classList.add("is-editing-quantity");
   });
@@ -149,6 +151,20 @@ document.querySelectorAll(".js-save-link").forEach((link) => {
       `.js-cart-item-container-${productId}`
     );
 
+    const input = document.querySelector(".js-quantity-input").value;
+    const newQuantity = Number(input);
+
     container.classList.remove("is-editing-quantity");
+
+    // Update the quantity in cart data here too
+    const cartItem = cart.find((item) => item.productId === productId);
+    if (cartItem) {
+      cartItem.quantity = newQuantity;
+    }
+
+    const quantityCount = container.querySelector(".js-quantity-count");
+    quantityCount.innerHTML = `Quantity: <span class="quantity-label js-quantity-label">${newQuantity}</span>`;
+
+    updateCartQuantity();
   });
 });
