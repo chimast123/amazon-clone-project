@@ -233,3 +233,7 @@
 .is-editing-quantity .js-update-link {
   display: none;
 }
+
+.is-editing-quantity .js-quantity-label {
+  display: none;
+}

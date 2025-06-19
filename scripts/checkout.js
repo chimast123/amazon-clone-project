@@ -145,6 +145,27 @@ document.querySelectorAll(".js-update-link").forEach((link) => {
     quantityCount.innerHTML = "Quantity: ";
 
     container.classList.add("is-editing-quantity");
+
+    const input = container.querySelector(".js-quantity-input");
+    input.focus();
+
+    // Add Enter key support
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        const newQuantity = Number(input.value);
+
+        if (newQuantity >= 0 && newQuantity < 1000) {
+          updateQuantity(productId, newQuantity);
+
+          quantityCount.innerHTML = `Quantity: <span class="quantity-label js-quantity-label">${newQuantity}</span>`;
+
+          updateCartQuantity();
+          container.classList.remove("is-editing-quantity");
+        } else {
+          alert("Please enter a quantity between 0 and 999.");
+        }
+      }
+    });
   });
 });
 
@@ -157,16 +178,18 @@ document.querySelectorAll(".js-save-link").forEach((link) => {
     );
 
     const input = container.querySelector(".js-quantity-input").value;
-    let newQuantity = Number(input);
+    const newQuantity = Number(input);
 
-    container.classList.remove("is-editing-quantity");
+    if (newQuantity >= 0 && newQuantity < 1000) {
+      updateQuantity(productId, newQuantity);
 
-    // Update the quantity in cart data here too
-    updateQuantity(productId, newQuantity);
+      const quantityCount = container.querySelector(".js-quantity-count");
+      quantityCount.innerHTML = `Quantity: <span class="quantity-label js-quantity-label">${newQuantity}</span>`;
 
-    const quantityCount = container.querySelector(".js-quantity-count");
-    quantityCount.innerHTML = `Quantity: <span class="quantity-label js-quantity-label">${newQuantity}</span>`;
-
-    updateCartQuantity();
+      updateCartQuantity();
+      container.classList.remove("is-editing-quantity");
+    } else {
+      alert("Please enter a quantity between 0 and 999.");
+    }
   });
 });
