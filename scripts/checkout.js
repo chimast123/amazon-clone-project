@@ -156,7 +156,7 @@ document.querySelectorAll(".js-save-link").forEach((link) => {
       `.js-cart-item-container-${productId}`
     );
 
-    const input = document.querySelector(".js-quantity-input").value;
+    const input = container.querySelector(".js-quantity-input").value;
     let newQuantity = Number(input);
 
     container.classList.remove("is-editing-quantity");
