@@ -209,3 +209,31 @@
   margin-top: 11px;
   margin-bottom: 15px;
 }
+
+.quantity-input {
+  width: 30px;
+  margin: 0px 2px;
+  display: none;
+}
+
+.save-quantity-link {
+  display: none;
+}
+
+.is-editing-quantity .quantity-input {
+  width: 30px;
+  margin: 0px 2px;
+  display: initial;
+}
+
+.is-editing-quantity .save-quantity-link {
+  display: initial;
+}
+
+.is-editing-quantity .js-update-link {
+  display: none;
+}
+
+.is-editing-quantity .js-quantity-label {
+  display: none;
+}
