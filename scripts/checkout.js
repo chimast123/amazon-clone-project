@@ -124,20 +124,7 @@ cart.forEach((cartItem) => {
           </div>`;
 });
 
-<<<<<<< HEAD
-// Function to update the checkout header
-function updateCheckoutHeader() {
-  const quantity = updateCartQuantity(); // Reuse the shared function
-  document.querySelector(".js-cart-quantity").textContent = `${quantity} items`;
-}
-
-// Initialize on page load
-document.addEventListener("DOMContentLoaded", () => {
-  updateCheckoutHeader();
-});
-=======
 function deliveryOptionsHTML() {}
->>>>>>> 17fa508d5293c258356ce8d6b8f7f6c73863032e
 
 document.querySelector(".js-order-summary").innerHTML = cartSummaryHTML;
 
@@ -151,9 +138,6 @@ document.querySelectorAll(".js-delete-link").forEach((link) => {
     );
     container.remove();
 
-<<<<<<< HEAD
-    updateCheckoutHeader();
-=======
     updateCartQuantity();
   });
 });
@@ -217,6 +201,5 @@ document.querySelectorAll(".js-save-link").forEach((link) => {
     } else {
       alert("Please enter a quantity between 0 and 999.");
     }
->>>>>>> 17fa508d5293c258356ce8d6b8f7f6c73863032e
   });
 });
