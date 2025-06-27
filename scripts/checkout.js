@@ -29,34 +29,35 @@ function updateCartQuantity() {
 
 updateCartQuantity();
 
-let cartSummaryHTML = "";
+function renderOrderSummary() {
+  let cartSummaryHTML = "";
 
-cart.forEach((cartItem) => {
-  const productId = cartItem.productId;
+  cart.forEach((cartItem) => {
+    const productId = cartItem.productId;
 
-  let matchingProduct;
+    let matchingProduct;
 
-  products.forEach((product) => {
-    if (product.id === productId) {
-      matchingProduct = product;
-    }
-  });
+    products.forEach((product) => {
+      if (product.id === productId) {
+        matchingProduct = product;
+      }
+    });
 
-  const deliveryOptionId = cartItem.deliveryOptionId;
+    const deliveryOptionId = cartItem.deliveryOptionId;
 
-  let deliveryOption;
+    let deliveryOption;
 
-  deliveryOptions.forEach((option) => {
-    if (option.id === deliveryOptionId) {
-      deliveryOption = option;
-    }
-  });
+    deliveryOptions.forEach((option) => {
+      if (option.id === deliveryOptionId) {
+        deliveryOption = option;
+      }
+    });
 
-  const today = dayjs();
-  const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
-  const dateString = deliveryDate.format("dddd, MMMM D");
+    const today = dayjs();
+    const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
+    const dateString = deliveryDate.format("dddd, MMMM D");
 
-  cartSummaryHTML += `
+    cartSummaryHTML += `
   <div class="cart-item-container 
   js-cart-item-container-${matchingProduct.id} ">
             <div class="delivery-date">Delivery date: ${dateString}</div>
@@ -105,25 +106,25 @@ cart.forEach((cartItem) => {
               </div>
             </div>
           </div>`;
-});
+  });
 
-function deliveryOptionsHTML(matchingProduct, cartItem) {
-  let html = "";
+  function deliveryOptionsHTML(matchingProduct, cartItem) {
+    let html = "";
 
-  deliveryOptions.forEach((deliveryOption) => {
-    const today = dayjs();
-    const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
-    const dateString = deliveryDate.format("dddd, MMMM D");
-    const priceString =
-      deliveryOption.priceCents === 0
-        ? "FREE"
-        : `$${formatCurrency(deliveryOption.priceCents)} -`;
+    deliveryOptions.forEach((deliveryOption) => {
+      const today = dayjs();
+      const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
+      const dateString = deliveryDate.format("dddd, MMMM D");
+      const priceString =
+        deliveryOption.priceCents === 0
+          ? "FREE"
+          : `$${formatCurrency(deliveryOption.priceCents)} -`;
 
-    const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
+      const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
 
-    html += `<div class="delivery-option js-delivery-option" data-product-id="${
-      matchingProduct.id
-    }" data-delivery-option-id="${deliveryOption.id}">
+      html += `<div class="delivery-option js-delivery-option" data-product-id="${
+        matchingProduct.id
+      }" data-delivery-option-id="${deliveryOption.id}">
                   <input
                     type="radio"
                     ${isChecked ? "checked" : ""}
@@ -135,92 +136,96 @@ function deliveryOptionsHTML(matchingProduct, cartItem) {
                     <div class="delivery-option-price">${priceString} Shipping</div>
                   </div>
                 </div>`;
+    });
+
+    return html;
+  }
+
+  document.querySelector(".js-order-summary").innerHTML = cartSummaryHTML;
+
+  document.querySelectorAll(".js-delete-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      const productId = link.dataset.productId;
+      removeFromCart(productId);
+
+      const container = document.querySelector(
+        `.js-cart-item-container-${productId}`
+      );
+      container.remove();
+
+      updateCartQuantity();
+    });
   });
 
-  return html;
-}
+  document.querySelectorAll(".js-update-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      const productId = link.dataset.productId;
 
-document.querySelector(".js-order-summary").innerHTML = cartSummaryHTML;
+      const container = document.querySelector(
+        `.js-cart-item-container-${productId}`
+      );
 
-document.querySelectorAll(".js-delete-link").forEach((link) => {
-  link.addEventListener("click", () => {
-    const productId = link.dataset.productId;
-    removeFromCart(productId);
+      // FIX: Only update quantity count inside this container
+      const quantityCount = container.querySelector(".js-quantity-count");
+      quantityCount.innerHTML = "Quantity: ";
 
-    const container = document.querySelector(
-      `.js-cart-item-container-${productId}`
-    );
-    container.remove();
+      container.classList.add("is-editing-quantity");
 
-    updateCartQuantity();
-  });
-});
+      const input = container.querySelector(".js-quantity-input");
+      input.focus();
 
-document.querySelectorAll(".js-update-link").forEach((link) => {
-  link.addEventListener("click", () => {
-    const productId = link.dataset.productId;
+      // Add Enter key support
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          const newQuantity = Number(input.value);
 
-    const container = document.querySelector(
-      `.js-cart-item-container-${productId}`
-    );
+          if (newQuantity >= 0 && newQuantity < 1000) {
+            updateQuantity(productId, newQuantity);
 
-    // FIX: Only update quantity count inside this container
-    const quantityCount = container.querySelector(".js-quantity-count");
-    quantityCount.innerHTML = "Quantity: ";
+            quantityCount.innerHTML = `Quantity: <span class="quantity-label js-quantity-label">${newQuantity}</span>`;
 
-    container.classList.add("is-editing-quantity");
-
-    const input = container.querySelector(".js-quantity-input");
-    input.focus();
-
-    // Add Enter key support
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        const newQuantity = Number(input.value);
-
-        if (newQuantity >= 0 && newQuantity < 1000) {
-          updateQuantity(productId, newQuantity);
-
-          quantityCount.innerHTML = `Quantity: <span class="quantity-label js-quantity-label">${newQuantity}</span>`;
-
-          updateCartQuantity();
-          container.classList.remove("is-editing-quantity");
-        } else {
-          alert("Please enter a quantity between 0 and 999.");
+            updateCartQuantity();
+            container.classList.remove("is-editing-quantity");
+          } else {
+            alert("Please enter a quantity between 0 and 999.");
+          }
         }
+      });
+    });
+  });
+
+  document.querySelectorAll(".js-save-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      const productId = link.dataset.productId;
+
+      const container = document.querySelector(
+        `.js-cart-item-container-${productId}`
+      );
+
+      const input = container.querySelector(".js-quantity-input").value;
+      const newQuantity = Number(input);
+
+      if (newQuantity >= 0 && newQuantity < 1000) {
+        updateQuantity(productId, newQuantity);
+
+        const quantityCount = container.querySelector(".js-quantity-count");
+        quantityCount.innerHTML = `Quantity: <span class="quantity-label js-quantity-label">${newQuantity}</span>`;
+
+        updateCartQuantity();
+        container.classList.remove("is-editing-quantity");
+      } else {
+        alert("Please enter a quantity between 0 and 999.");
       }
     });
   });
-});
 
-document.querySelectorAll(".js-save-link").forEach((link) => {
-  link.addEventListener("click", () => {
-    const productId = link.dataset.productId;
-
-    const container = document.querySelector(
-      `.js-cart-item-container-${productId}`
-    );
-
-    const input = container.querySelector(".js-quantity-input").value;
-    const newQuantity = Number(input);
-
-    if (newQuantity >= 0 && newQuantity < 1000) {
-      updateQuantity(productId, newQuantity);
-
-      const quantityCount = container.querySelector(".js-quantity-count");
-      quantityCount.innerHTML = `Quantity: <span class="quantity-label js-quantity-label">${newQuantity}</span>`;
-
-      updateCartQuantity();
-      container.classList.remove("is-editing-quantity");
-    } else {
-      alert("Please enter a quantity between 0 and 999.");
-    }
+  document.querySelectorAll(".js-delivery-option").forEach((element) => {
+    element.addEventListener("click", () => {
+      const { productId, deliveryOptionId } = element.dataset;
+      updateDeliveryOption(productId, deliveryOptionId);
+      renderOrderSummary();
+    });
   });
-});
+}
 
-document.querySelectorAll(".js-delivery-option").forEach((element) => {
-  element.addEventListener("click", () => {
-    const { productId, deliveryOptionId } = element.dataset;
-    updateDeliveryOption(productId, deliveryOptionId);
-  });
-});
+renderOrderSummary();
